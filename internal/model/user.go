@@ -11,6 +11,7 @@ type User struct {
 	ID 							uuid.UUID		`gorm:"type: uuid; primaryKey; default: uuid_generate_v4()" json:"id"`
 	OrganizationID				uuid.UUID 		`gorm:"type: uuid; not null" json:"organization_id"`
 	Organization				Organization	`gorm:"foreignKey:OrganizationID" json:"organization"`
+	Details						UserDetail		`gorm:"foreignKey:UserID" json:"details"`
 
 	Email 						string 			`gorm:"type: varchar(255); not null" json:"email"`
 	EmailConfirmedAt 			time.Time		`gorm:"type: timestamptz;" json:"email_confirmed_at"`
