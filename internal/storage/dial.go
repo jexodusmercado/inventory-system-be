@@ -4,19 +4,26 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/spf13/viper"
+	"github.com/jexodusmercado/inventory-system-be/internal/conf"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-func Dial(vi *viper.Viper) (*gorm.DB) {
-	DSN:= vi.GetString("DB_URL")
+func Dial(conf conf.Config) (*gorm.DB) {
+	DSN := conf.DbHost
 
 	fmt.Println(DSN)
-	db, err := gorm.Open(postgres.Open(DSN), &gorm.Config{})
-
+	db, err := gorm.Open(postgres.Open(DSN), &gorm.Config{
+		DisableForeignKeyConstraintWhenMigrating: true,
+	})
 	if err != nil {
 		log.Fatalln("database connection failed")
+		return nil
+	}
+
+	err = InitMigration(db)
+	if err != nil {
+		log.Fatalln("database migration failed")
 		return nil
 	}
 
