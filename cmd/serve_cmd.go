@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"context"
+	"log"
+	"net"
 
 	"github.com/jexodusmercado/inventory-system-be/internal/api"
 	"github.com/jexodusmercado/inventory-system-be/internal/conf"
@@ -22,11 +24,15 @@ func serve(ctx context.Context) {
 	config := conf.LoadConfig()
 
 	db := storage.Dial(config)
-	
+
 	gRouter := router.NewRouter()
 	router := gRouter.InitRouter()
 
 	api := api.NewAPI(db, config, router)
 
-	api.Serve()
+	addr := net.JoinHostPort(config.Host, config.Port)
+	log.Printf("Starting server on %s", addr)
+
+	api.ListenAndServe(ctx, addr)
+
 }

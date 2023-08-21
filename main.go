@@ -4,9 +4,12 @@ import (
 	"context"
 	"log"
 	"os/signal"
+	"sync"
 	"syscall"
+	"time"
 
 	"github.com/jexodusmercado/inventory-system-be/cmd"
+	"github.com/jexodusmercado/inventory-system-be/internal/api"
 )
 
 func main() {
@@ -22,6 +25,36 @@ func main() {
 	// block while it is running
 	if err := cmd.RootCommand().ExecuteContext(execCtx); err != nil {
 		log.Fatalln(err)
+	}
+
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), time.Minute)
+	defer shutdownCancel()
+
+	var wg sync.WaitGroup
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		log.Println("shutting down API servers")
+
+		// wait for API servers to shut down gracefully
+		api.WaitForCleanup(shutdownCtx)
+	}()
+
+	cleanupDone := make(chan struct{})
+	go func() {
+		defer close(cleanupDone)
+		wg.Wait()
+	}()
+
+	select {
+	case <-shutdownCtx.Done():
+		// cleanup timed out
+		return
+
+	case <-cleanupDone:
+		// cleanup finished before timing out
+		return
 	}
 
 }
