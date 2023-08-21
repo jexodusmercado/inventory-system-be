@@ -9,19 +9,12 @@ import (
 type API struct {
 	db *gorm.DB
 	config conf.Config
-	router *gin.Engine
+	handler *gin.Engine
 }
 
-func NewAPI(database *gorm.DB, globalConfig conf.Config, router *gin.Engine) *API {
+func NewAPI(database *gorm.DB, globalConfig conf.Config, handler *gin.Engine) *API {
 	// initialize api
-	api := &API{db: database, config: globalConfig, router: router}
+	api := &API{db: database, config: globalConfig, handler: handler}
 
 	return api
-}
-
-
-func (api *API) Serve() {
-	port := api.config.Port
-
-	api.router.Run(port)
 }
