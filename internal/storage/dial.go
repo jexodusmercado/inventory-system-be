@@ -14,7 +14,7 @@ func Dial(conf conf.Config) (*gorm.DB) {
 
 	fmt.Println(DSN)
 	db, err := gorm.Open(postgres.Open(DSN), &gorm.Config{
-		DisableForeignKeyConstraintWhenMigrating: true,
+		// DisableForeignKeyConstraintWhenMigrating: true,
 	})
 	if err != nil {
 		log.Fatalln("database connection failed")
