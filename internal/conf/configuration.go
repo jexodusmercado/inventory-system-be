@@ -7,7 +7,8 @@ import (
 )
 
 type Config struct {
-	Port               string `mapstructure:"PORT"`
+	Host			   string `mapstructure:"SERVER_HOST"`
+	Port               string `mapstructure:"SERVER_PORT"`
 	DbHost             string `mapstructure:"DB_HOST"`
 }
 
