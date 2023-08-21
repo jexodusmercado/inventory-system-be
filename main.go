@@ -5,6 +5,8 @@ import (
 	"log"
 	"os/signal"
 	"syscall"
+
+	"github.com/jexodusmercado/inventory-system-be/cmd"
 )
 
 func main() {
@@ -15,5 +17,11 @@ func main() {
 		<-execCtx.Done()
 		log.Println("received graceful shutdown signal")
 	}()
+
+	// command is expected to obey the cancellation signal on execCtx and
+	// block while it is running
+	if err := cmd.RootCommand().ExecuteContext(execCtx); err != nil {
+		log.Fatalln(err)
+	}
 
 }
