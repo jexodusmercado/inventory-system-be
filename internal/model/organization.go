@@ -18,3 +18,21 @@ type Organization struct {
 	UpdatedAt 	time.Time 			`gorm:"type: timestamptz;" json:"updated_at"`
 	DeletedAt 	gorm.DeletedAt 		`gorm:"index" json:"deleted_at"`
 }
+
+// NewOrganization and save to database
+func (o *Organization) NewOrganization(db *gorm.DB) (*Organization, error) {
+	err := db.Create(&o).Error
+	if err != nil {
+		return &Organization{}, err
+	}
+	return o, nil
+}
+
+// GetOrganizationByID get organization by id
+func (o *Organization) GetOrganizationByID(db *gorm.DB, uid uuid.UUID) (*Organization, error) {
+	err := db.Model(Organization{}).Where("id = ?", uid).Take(&o).Error
+	if err != nil {
+		return &Organization{}, err
+	}
+	return o, nil
+}

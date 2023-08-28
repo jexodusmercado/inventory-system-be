@@ -37,3 +37,23 @@ type User struct {
 	UpdatedAt 					time.Time 		`gorm:"type: timestamptz;" json:"updated_at"`
 	DeletedAt 					gorm.DeletedAt 	`gorm:"index" json:"deleted_at"`
 }
+
+//NewUser and save to database
+func (u *User) NewUser(db *gorm.DB) (*User, error) {
+	var err error
+	err = db.Create(&u).Error
+	if err != nil {
+		return &User{}, err
+	}
+	return u, nil
+}
+
+//GetUserByID get user by id
+func (u *User) GetUserByID(db *gorm.DB, uid uuid.UUID) (*User, error) {
+	var err error
+	err = db.Model(User{}).Where("id = ?", uid).Take(&u).Error
+	if err != nil {
+		return &User{}, err
+	}
+	return u, nil
+}
